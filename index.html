@@ -10,23 +10,28 @@
     <main class="app-shell">
       <header class="app-header">
         <div>
-          <p class="eyebrow">Expense Tracker</p>
+          <p class="eyebrow">Personal Finance</p>
           <h1>個人記帳網站</h1>
         </div>
-        <p class="header-note">記錄日常支出，掌握目前花費。</p>
+        <div class="header-badge">Dashboard</div>
       </header>
 
       <section class="dashboard-grid" aria-label="記帳總覽">
         <article class="metric-card">
-          <span>目前總支出</span>
+          <div class="metric-label">目前總支出</div>
           <strong id="totalExpense">$0</strong>
-          <small id="recordCount">0 筆支出</small>
+          <div class="metric-meta">
+            <span id="recordCount">0 筆支出</span>
+            <span>本機保存</span>
+          </div>
         </article>
 
         <section class="entry-panel" aria-labelledby="entryTitle">
-          <div class="section-title">
-            <p class="eyebrow">Entry</p>
-            <h2 id="entryTitle">新增記帳資料</h2>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Entry</p>
+              <h2 id="entryTitle">新增記帳資料</h2>
+            </div>
           </div>
 
           <form id="expenseForm" class="expense-form">
@@ -64,13 +69,13 @@
               <input id="noteInput" type="text" placeholder="午餐" required />
             </label>
 
-            <button class="primary-button" type="submit">新增</button>
+            <button class="primary-button" type="submit">新增記帳</button>
           </form>
         </section>
       </section>
 
       <section class="records-section" aria-labelledby="recordsTitle">
-        <div class="section-title records-title">
+        <div class="section-heading records-title">
           <div>
             <p class="eyebrow">Records</p>
             <h2 id="recordsTitle">記帳清單</h2>

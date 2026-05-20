@@ -83,11 +83,36 @@ function createRecordItem(record) {
   const item = document.createElement("li");
   item.className = "record-item";
 
-  const recordText = document.createElement("span");
-  recordText.className = "record-text";
-  recordText.textContent = `${record.date}｜${record.category}｜${formatCurrency(
+  const recordContent = document.createElement("div");
+  recordContent.className = "record-content";
+
+  const compactText = document.createElement("span");
+  compactText.className = "record-text sr-only";
+  compactText.textContent = `${record.date}｜${record.category}｜${formatCurrency(
     record.amount,
   )}｜${record.note}`;
+
+  const recordDate = document.createElement("div");
+  recordDate.className = "record-date";
+
+  const dateLabel = document.createElement("span");
+  dateLabel.textContent = "日期";
+
+  const dateValue = document.createElement("strong");
+  dateValue.textContent = record.date;
+
+  recordDate.append(dateLabel, dateValue);
+
+  const recordDetails = document.createElement("div");
+  recordDetails.className = "record-details";
+
+  const categoryDetail = createRecordDetail("類別", record.category);
+  const amountDetail = createRecordDetail("金額", formatCurrency(record.amount));
+  amountDetail.classList.add("record-amount");
+  const noteDetail = createRecordDetail("備註", record.note);
+
+  recordDetails.append(categoryDetail, amountDetail, noteDetail);
+  recordContent.append(compactText, recordDate, recordDetails);
 
   const deleteButton = document.createElement("button");
   deleteButton.className = "delete-button";
@@ -99,9 +124,24 @@ function createRecordItem(record) {
     `刪除 ${record.date} ${record.category} ${record.note}`,
   );
 
-  item.append(recordText, deleteButton);
+  item.append(recordContent, deleteButton);
 
   return item;
+}
+
+function createRecordDetail(label, value) {
+  const detail = document.createElement("div");
+  detail.className = "record-detail";
+
+  const detailLabel = document.createElement("span");
+  detailLabel.textContent = label;
+
+  const detailValue = document.createElement("strong");
+  detailValue.textContent = value;
+
+  detail.append(detailLabel, detailValue);
+
+  return detail;
 }
 
 function renderRecords() {
