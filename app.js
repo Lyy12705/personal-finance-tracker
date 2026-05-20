@@ -6,8 +6,21 @@ const noteInput = document.querySelector("#noteInput");
 const recordList = document.querySelector("#recordList");
 const totalExpense = document.querySelector("#totalExpense");
 const recordCount = document.querySelector("#recordCount");
+const categoryStatsContent = document.querySelector("#categoryStatsContent");
+const categoryChart = document.querySelector("#categoryChart");
+const categoryChartTotal = document.querySelector("#categoryChartTotal");
+const categoryStatsList = document.querySelector("#categoryStatsList");
+const categoryEmptyState = document.querySelector("#categoryEmptyState");
 
 const STORAGE_KEY = "personalFinanceTrackerRecords";
+const CATEGORY_ORDER = ["餐飲", "交通", "購物", "娛樂", "其他"];
+const CATEGORY_COLORS = {
+  餐飲: "#1f8a70",
+  交通: "#2f6fbb",
+  購物: "#b98525",
+  娛樂: "#805ad5",
+  其他: "#63716b",
+};
 
 let records = loadRecords();
 let nextRecordId = getNextRecordId();
@@ -74,9 +87,94 @@ function calculateTotal() {
   return records.reduce((sum, record) => sum + record.amount, 0);
 }
 
+function calculateCategoryTotals() {
+  const totals = records.reduce((summary, record) => {
+    summary[record.category] = (summary[record.category] || 0) + record.amount;
+    return summary;
+  }, {});
+
+  return CATEGORY_ORDER.map((category) => ({
+    category,
+    amount: totals[category] || 0,
+  })).filter((item) => item.amount > 0);
+}
+
 function renderSummary() {
   totalExpense.textContent = formatCurrency(calculateTotal());
   recordCount.textContent = `${records.length} 筆支出`;
+}
+
+function renderCategoryStats() {
+  const total = calculateTotal();
+  const categoryTotals = calculateCategoryTotals();
+
+  categoryStatsList.textContent = "";
+  categoryChartTotal.textContent = formatCurrency(total);
+
+  if (categoryTotals.length === 0) {
+    categoryStatsContent.classList.add("is-hidden");
+    categoryEmptyState.classList.remove("is-hidden");
+    categoryChart.style.background = "";
+    categoryChart.setAttribute("aria-label", "目前尚無支出資料");
+    return;
+  }
+
+  categoryStatsContent.classList.remove("is-hidden");
+  categoryEmptyState.classList.add("is-hidden");
+
+  let currentPercent = 0;
+  const gradientStops = categoryTotals.map((item, index) => {
+    const percent = (item.amount / total) * 100;
+    const startPercent = currentPercent;
+    currentPercent += percent;
+    const endPercent = index === categoryTotals.length - 1 ? 100 : currentPercent;
+    const color = CATEGORY_COLORS[item.category];
+
+    return `${color} ${startPercent}% ${endPercent}%`;
+  });
+
+  categoryChart.style.background = `conic-gradient(${gradientStops.join(", ")})`;
+  categoryChart.setAttribute(
+    "aria-label",
+    categoryTotals
+      .map(
+        (item) =>
+          `${item.category} ${Math.round((item.amount / total) * 100)}%`,
+      )
+      .join("，"),
+  );
+
+  categoryTotals.forEach((item) => {
+    categoryStatsList.append(createCategoryStatItem(item, total));
+  });
+}
+
+function createCategoryStatItem(item, total) {
+  const statItem = document.createElement("li");
+  statItem.className = "category-item";
+
+  const colorDot = document.createElement("span");
+  colorDot.className = "category-dot";
+  colorDot.style.background = CATEGORY_COLORS[item.category];
+
+  const content = document.createElement("div");
+  content.className = "category-content";
+
+  const categoryName = document.createElement("strong");
+  categoryName.textContent = item.category;
+
+  const percent = document.createElement("span");
+  percent.textContent = `${Math.round((item.amount / total) * 100)}%`;
+
+  content.append(categoryName, percent);
+
+  const amount = document.createElement("strong");
+  amount.className = "category-amount";
+  amount.textContent = formatCurrency(item.amount);
+
+  statItem.append(colorDot, content, amount);
+
+  return statItem;
 }
 
 function createRecordItem(record) {
@@ -146,21 +244,20 @@ function createRecordDetail(label, value) {
 
 function renderRecords() {
   recordList.textContent = "";
+  renderSummary();
+  renderCategoryStats();
 
   if (records.length === 0) {
     const emptyItem = document.createElement("li");
     emptyItem.className = "empty-state";
     emptyItem.textContent = "尚無記帳資料";
     recordList.append(emptyItem);
-    renderSummary();
     return;
   }
 
   records.forEach((record) => {
     recordList.append(createRecordItem(record));
   });
-
-  renderSummary();
 }
 
 function resetForm() {

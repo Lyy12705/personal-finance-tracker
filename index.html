@@ -74,6 +74,41 @@
         </section>
       </section>
 
+      <section class="stats-section" aria-labelledby="statsTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Category</p>
+            <h2 id="statsTitle">分類統計</h2>
+          </div>
+        </div>
+
+        <div id="categoryStatsContent" class="stats-layout">
+          <div class="chart-panel" aria-label="各類別支出比例">
+            <div
+              id="categoryChart"
+              class="donut-chart"
+              role="img"
+              aria-label="各類別支出比例圖"
+            >
+              <div class="donut-center">
+                <span>總支出</span>
+                <strong id="categoryChartTotal">$0</strong>
+              </div>
+            </div>
+          </div>
+
+          <ul
+            id="categoryStatsList"
+            class="category-list"
+            aria-live="polite"
+          ></ul>
+        </div>
+
+        <p id="categoryEmptyState" class="category-empty">
+          目前尚無支出資料
+        </p>
+      </section>
+
       <section class="records-section" aria-labelledby="recordsTitle">
         <div class="section-heading records-title">
           <div>
