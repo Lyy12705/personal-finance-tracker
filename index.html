@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>個人記帳網站</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Expense Tracker</p>
+          <h1>個人記帳網站</h1>
+        </div>
+        <p class="header-note">記錄日常支出，掌握目前花費。</p>
+      </header>
+
+      <section class="dashboard-grid" aria-label="記帳總覽">
+        <article class="metric-card">
+          <span>目前總支出</span>
+          <strong id="totalExpense">$0</strong>
+          <small id="recordCount">0 筆支出</small>
+        </article>
+
+        <section class="entry-panel" aria-labelledby="entryTitle">
+          <div class="section-title">
+            <p class="eyebrow">Entry</p>
+            <h2 id="entryTitle">新增記帳資料</h2>
+          </div>
+
+          <form id="expenseForm" class="expense-form">
+            <label class="field" for="dateInput">
+              <span>日期</span>
+              <input id="dateInput" type="date" required />
+            </label>
+
+            <label class="field" for="categoryInput">
+              <span>類別</span>
+              <select id="categoryInput" required>
+                <option value="餐飲">餐飲</option>
+                <option value="交通">交通</option>
+                <option value="購物">購物</option>
+                <option value="娛樂">娛樂</option>
+                <option value="其他">其他</option>
+              </select>
+            </label>
+
+            <label class="field" for="amountInput">
+              <span>金額</span>
+              <input
+                id="amountInput"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                placeholder="120"
+                required
+              />
+            </label>
+
+            <label class="field field-wide" for="noteInput">
+              <span>備註</span>
+              <input id="noteInput" type="text" placeholder="午餐" required />
+            </label>
+
+            <button class="primary-button" type="submit">新增</button>
+          </form>
+        </section>
+      </section>
+
+      <section class="records-section" aria-labelledby="recordsTitle">
+        <div class="section-title records-title">
+          <div>
+            <p class="eyebrow">Records</p>
+            <h2 id="recordsTitle">記帳清單</h2>
+          </div>
+        </div>
+
+        <ul id="recordList" class="record-list" aria-live="polite"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
