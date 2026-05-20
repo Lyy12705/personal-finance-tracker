@@ -7,8 +7,64 @@ const recordList = document.querySelector("#recordList");
 const totalExpense = document.querySelector("#totalExpense");
 const recordCount = document.querySelector("#recordCount");
 
-let records = [];
-let nextRecordId = 1;
+const STORAGE_KEY = "personalFinanceTrackerRecords";
+
+let records = loadRecords();
+let nextRecordId = getNextRecordId();
+
+function loadRecords() {
+  try {
+    const savedRecords = localStorage.getItem(STORAGE_KEY);
+
+    if (!savedRecords) {
+      return [];
+    }
+
+    const parsedRecords = JSON.parse(savedRecords);
+
+    if (!Array.isArray(parsedRecords)) {
+      return [];
+    }
+
+    return parsedRecords
+      .map((record) => ({
+        id: String(record.id),
+        date: record.date,
+        category: record.category,
+        amount: Number(record.amount),
+        note: record.note,
+      }))
+      .filter(
+        (record) =>
+          record.id &&
+          record.date &&
+          record.category &&
+          Number.isFinite(record.amount) &&
+          record.amount > 0 &&
+          record.note,
+      );
+  } catch (error) {
+    console.warn("無法讀取 localStorage 記帳資料", error);
+    return [];
+  }
+}
+
+function saveRecords() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  } catch (error) {
+    console.warn("無法儲存 localStorage 記帳資料", error);
+  }
+}
+
+function getNextRecordId() {
+  const maxId = records.reduce((max, record) => {
+    const recordId = Number(record.id);
+    return Number.isFinite(recordId) ? Math.max(max, recordId) : max;
+  }, 0);
+
+  return maxId + 1;
+}
 
 function formatCurrency(amount) {
   return `$${amount.toLocaleString("en-US")}`;
@@ -103,6 +159,7 @@ expenseForm.addEventListener("submit", (event) => {
   });
   nextRecordId += 1;
 
+  saveRecords();
   renderRecords();
   resetForm();
 });
@@ -115,6 +172,7 @@ recordList.addEventListener("click", (event) => {
   }
 
   records = records.filter((record) => record.id !== deleteButton.dataset.id);
+  saveRecords();
   renderRecords();
 });
 
